@@ -150,68 +150,114 @@ func (n *Node) String() string {
 }
 
 // AppendData to append a new data
-func (n *Node) AppendData(scopes string, data *model.Data) *model.Data {
+func (n *Node) AppendData(scopes string, data model.Data) model.Data {
 	n.freeze.RLock()
 	defer n.freeze.RUnlock()
 	node := n.nodeWithScopes(scopes)
 	if node == nil {
 		utils.Logger.Error("[AppendData]: not found node: {%s}", scopes)
-		return nil
+		return model.Data{}
 	}
 
-	node.Data[data.Id] = data
+	node.Data[data.Id] = &data
 	return data
 }
 
 // NewData package the value to new data and append it.
-func (n *Node) NewData(scopes string, value map[string]interface{}) *model.Data {
-	n.freeze.RLock()
-	defer n.freeze.RUnlock()
+func (n *Node) NewData(scopes string, value map[string]interface{}) model.Data {
 	data, err := model.NewDataWithDataValue(value)
 	if err != nil {
 		utils.Logger.Error(err)
-		return nil
+		return model.Data{}
 	}
 
-	return n.AppendData(scopes, data)
+	return n.AppendData(scopes, *data)
 }
 
 // DeleteData delete data from n
-func (n *Node) DeleteData(scopes, id string) *model.Data {
+func (n *Node) DeleteData(scopes, id string) model.Data {
 	n.freeze.RLock()
 	defer n.freeze.RUnlock()
 	node := n.nodeWithScopes(scopes)
 	if node == nil {
 		utils.Logger.Error("[DeleteData]: Not found node: {%s}", scopes)
-		return nil
+		return model.Data{}
 	}
 	if _, ok := node.Data[id]; !ok {
 		utils.Logger.Error("[DeleteData]: node found data: {%s} in node :{%s}", id, scopes)
-		return nil
+		return model.Data{}
 	}
 
 	node.Data[id].Delete()
 	data := node.Data[id]
 	delete(node.Data, id)
 
-	return data
+	return *data
 }
 
 // UpdateData update a data with scopes and id
-func (n *Node) UpdateData(scopes, id string, value map[string]interface{}) *model.Data {
+func (n *Node) UpdateData(scopes, id string, value map[string]interface{}) model.Data {
 	n.freeze.RLock()
 	defer n.freeze.RUnlock()
 	node := n.nodeWithScopes(scopes)
 	if node == nil {
 		utils.Logger.Error("[UpdateData]: Not found node: {%s}", scopes)
-		return nil
+		return model.Data{}
 	}
 	if _, ok := node.Data[id]; !ok {
 		utils.Logger.Error("[UpdateData]: node found data: {%s} in node :{%s}", id, scopes)
-		return nil
+		return model.Data{}
 	}
 	node.Data[id].DataValue = value
 	node.Data[id].UpdateAt = utils.NowTime()
 
-	return node.Data[id]
+	return *node.Data[id]
+}
+
+// DataWithId return data in current node
+func (n *Node) DataWithId(id string) model.Data {
+	n.freeze.RLock()
+	defer n.freeze.RUnlock()
+
+	if _, ok := n.Data[id]; !ok {
+		utils.Logger.Error("[UpdateData]: node found data: {%s}", id)
+		return model.Data{}
+	}
+
+	return *n.Data[id]
+}
+
+// DataWithScopes return special data in special scopes
+func (n *Node) DataWithScopes(scopes, id string) model.Data {
+	node := n.nodeWithScopes(scopes)
+	if node == nil {
+		utils.Logger.Error("[DataWithScopes]: Not found node: {%s}", scopes)
+		return model.Data{}
+	}
+	return node.DataWithId(id)
+}
+
+// Datas return the node all data(as list) , and not the thread-safe
+func (n *Node) Datas() []model.Data {
+	n.freeze.RLock()
+	defer n.freeze.RUnlock()
+
+	res := make([]model.Data, 0, len(n.Data))
+
+	for _, dataItem := range n.Data {
+		res = append(res, *dataItem)
+	}
+
+	return res
+}
+
+// DatasWithScopes list datas from special node
+func (n *Node) DatasWithScopes(scopes string) []model.Data {
+	node := n.nodeWithScopes(scopes)
+	if node == nil {
+		utils.Logger.Error("[DataWithScopes]: Not found node: {%s}", scopes)
+		return make([]model.Data, 0)
+	}
+
+	return node.Datas()
 }

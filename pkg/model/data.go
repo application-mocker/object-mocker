@@ -10,7 +10,7 @@ type Data struct {
 	UpdateAt int64  `json:"update_at"` // the nano-second of last update time
 	DeleteAt int64  `json:"delete_at"` // the nano-second of delete time, if delete_at less than zero, the data not delete
 
-	DataValue map[string]interface{} // the custom datas
+	DataValue map[string]interface{} `json:"data"` // the custom datas
 }
 
 // NewData return a new data without Data.DataValue. And the Data.DataValue is empty but not nil.
