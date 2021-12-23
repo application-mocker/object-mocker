@@ -42,10 +42,9 @@ func (h *Handler) GetData(ctx *gin.Context) {
 }
 
 func (h *Handler) CreateData(ctx *gin.Context) {
-	var valueData map[string]interface{}
-
 	path := pathValue(ctx)
 
+	var valueData map[string]interface{}
 	err := ctx.BindJSON(&valueData)
 	if err != nil {
 		ErrorCtx(ctx, http.StatusBadRequest, err)
@@ -61,6 +60,26 @@ func (h *Handler) DeleteData(ctx *gin.Context) {
 	id := ctx.Query("id")
 	path := pathValue(ctx)
 	data := h.root.DeleteData(path, id)
+	if data.Id != id {
+		ErrorCtx(ctx, http.StatusNotFound, fmt.Errorf("not found data with id: %s in scope: %s", id, path))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, data)
+}
+
+func (h *Handler) UpdateData(ctx *gin.Context) {
+	id := ctx.Query("id")
+	path := pathValue(ctx)
+
+	var valueData map[string]interface{}
+	err := ctx.BindJSON(&valueData)
+	if err != nil {
+		ErrorCtx(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	data := h.root.UpdateData(path, id, valueData)
 	if data.Id != id {
 		ErrorCtx(ctx, http.StatusNotFound, fmt.Errorf("not found data with id: %s in scope: %s", id, path))
 		return

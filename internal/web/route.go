@@ -30,12 +30,13 @@ func StartHttpServer(node *tree.Node) {
 
 	server := gin.Default()
 
-	server.GET("/json/*path", handler.GetData)
-	server.POST("/json/*path", handler.CreateData)
-	server.DELETE("/json/*path", handler.DeleteData)
+	server.GET(utils.HttpJsonObjectPath, handler.GetData)
+	server.POST(utils.HttpJsonObjectPath, handler.CreateData)
+	server.DELETE(utils.HttpJsonObjectPath, handler.DeleteData)
+	server.PUT(utils.HttpJsonObjectPath, handler.UpdateData)
 
 	server.GET("/node/*path", handler.GetNode)
-	server.GET("/nodes", handler.ListAllNode)
+	server.GET("/nodes/", handler.ListAllNode)
 
 	utils.Logger.Trace("Add routes...")
 
