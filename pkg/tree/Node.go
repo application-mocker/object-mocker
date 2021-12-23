@@ -62,6 +62,7 @@ func (n *Node) UnFreeze() {
 }
 
 func newNode(parent *Node, scope string) *Node {
+	utils.Logger.Debugf("Init a new node: parent: {%s}; scope: {%s}", parent, scope)
 	return &Node{
 		Parent:   parent,
 		Scope:    scope,
@@ -73,6 +74,7 @@ func newNode(parent *Node, scope string) *Node {
 
 // NewRoot return a root node of tree
 func NewRoot() *Node {
+	utils.Logger.Info("Init a new root node")
 	return newNode(nil, "")
 }
 
@@ -85,7 +87,7 @@ func (n *Node) node(scope string) *Node {
 		return nil
 	}
 	if n.Children[scope] == nil {
-		n.Children[scope] = newNode(n.Parent, scope)
+		n.Children[scope] = newNode(n, scope)
 	}
 	return n.Children[scope]
 }
@@ -106,9 +108,33 @@ func (n *Node) nodeWithScopes(scopes string) *Node {
 	return nil
 }
 
+// NodeWithScopes return special node by Node.nodeWithScopes, but return is deep-clone value.
+func (n *Node) NodeWithScopes(scopes string) Node {
+	node := n.nodeWithScopes(scopes)
+	return *node.DeepClone()
+}
+
+// DeepClone a node, and set parent is nil of clone object
+func (n *Node) DeepClone() *Node {
+	n.freeze.RLock()
+	defer n.freeze.RUnlock()
+
+	node := newNode(nil, n.Scope)
+	for key, data := range n.Data {
+		node.Data[key] = data.Copy()
+	}
+
+	for key, nodeItem := range n.Children {
+		node.Children[key] = nodeItem.DeepClone()
+	}
+
+	return node
+}
+
 // removeNode will remove node from parent. If scope not exits, return nil.
 func (n *Node) removeNode(scope string) *Node {
 	if child, ok := n.Children[scope]; ok {
+		utils.Logger.Info("Remove node: {%s}", child)
 		delete(n.Children, scope)
 		return child
 	}
@@ -180,11 +206,11 @@ func (n *Node) DeleteData(scopes, id string) model.Data {
 	defer n.freeze.RUnlock()
 	node := n.nodeWithScopes(scopes)
 	if node == nil {
-		utils.Logger.Error("[DeleteData]: Not found node: {%s}", scopes)
+		utils.Logger.Errorf("[DeleteData]: Not found node: {%s}", scopes)
 		return model.Data{}
 	}
 	if _, ok := node.Data[id]; !ok {
-		utils.Logger.Error("[DeleteData]: node found data: {%s} in node :{%s}", id, scopes)
+		utils.Logger.Errorf("[DeleteData]: node found data: {%s} in node :{%s}", id, scopes)
 		return model.Data{}
 	}
 
@@ -201,11 +227,11 @@ func (n *Node) UpdateData(scopes, id string, value map[string]interface{}) model
 	defer n.freeze.RUnlock()
 	node := n.nodeWithScopes(scopes)
 	if node == nil {
-		utils.Logger.Error("[UpdateData]: Not found node: {%s}", scopes)
+		utils.Logger.Errorf("[UpdateData]: Not found node: {%s}", scopes)
 		return model.Data{}
 	}
 	if _, ok := node.Data[id]; !ok {
-		utils.Logger.Error("[UpdateData]: node found data: {%s} in node :{%s}", id, scopes)
+		utils.Logger.Errorf("[UpdateData]: node found data: {%s} in node :{%s}", id, scopes)
 		return model.Data{}
 	}
 	node.Data[id].DataValue = value
@@ -220,7 +246,7 @@ func (n *Node) DataWithId(id string) model.Data {
 	defer n.freeze.RUnlock()
 
 	if _, ok := n.Data[id]; !ok {
-		utils.Logger.Error("[UpdateData]: node found data: {%s}", id)
+		utils.Logger.Errorf("[UpdateData]: node found data: {%s}", id)
 		return model.Data{}
 	}
 
@@ -231,7 +257,7 @@ func (n *Node) DataWithId(id string) model.Data {
 func (n *Node) DataWithScopes(scopes, id string) model.Data {
 	node := n.nodeWithScopes(scopes)
 	if node == nil {
-		utils.Logger.Error("[DataWithScopes]: Not found node: {%s}", scopes)
+		utils.Logger.Errorf("[DataWithScopes]: Not found node: {%s}", scopes)
 		return model.Data{}
 	}
 	return node.DataWithId(id)
@@ -255,7 +281,7 @@ func (n *Node) Datas() []model.Data {
 func (n *Node) DatasWithScopes(scopes string) []model.Data {
 	node := n.nodeWithScopes(scopes)
 	if node == nil {
-		utils.Logger.Error("[DataWithScopes]: Not found node: {%s}", scopes)
+		utils.Logger.Errorf("[DataWithScopes]: Not found node: {%s}", scopes)
 		return make([]model.Data, 0)
 	}
 

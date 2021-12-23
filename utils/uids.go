@@ -6,8 +6,8 @@ import (
 )
 
 func init() {
-	uuid.SetNodeID([]byte(config.NodeId))
-	uuid.SetClockSequence(config.ClockSequence)
+	uuid.SetNodeID([]byte(config.Config.Application.NodeId))
+	uuid.SetClockSequence(config.Config.Application.ClockSequence)
 }
 
 func NewUUIDString() (string, error) {

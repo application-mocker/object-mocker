@@ -13,6 +13,17 @@ type Data struct {
 	DataValue map[string]interface{} `json:"data"` // the custom datas
 }
 
+func (d *Data) Copy() *Data {
+	data := &Data{}
+	data.Id = d.Id
+	data.DeleteAt = d.DeleteAt
+	data.CreateAt = d.CreateAt
+	data.UpdateAt = d.UpdateAt
+	data.DataValue = d.DataValue
+
+	return data
+}
+
 // NewData return a new data without Data.DataValue. And the Data.DataValue is empty but not nil.
 func NewData() (*Data, error) {
 	d := &Data{}

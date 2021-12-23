@@ -1,0 +1,4 @@
+http_server:
+  port: ":3000"
+application:
+  mod: "release"
