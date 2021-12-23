@@ -9,18 +9,18 @@ import (
 	"strings"
 )
 
-type Handler struct {
+type DataHandler struct {
 	root *tree.Node
 }
 
-func NewHandler(root *tree.Node) *Handler {
+func NewHandler(root *tree.Node) *DataHandler {
 	utils.Logger.Infof("Inti a handler with root-node: {%s}", root)
-	return &Handler{
+	return &DataHandler{
 		root: root,
 	}
 }
 
-func (h *Handler) GetData(ctx *gin.Context) {
+func (h *DataHandler) GetData(ctx *gin.Context) {
 	path := pathValue(ctx)
 	id := ctx.Query("id")
 	var data interface{}
@@ -41,7 +41,7 @@ func (h *Handler) GetData(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
-func (h *Handler) CreateData(ctx *gin.Context) {
+func (h *DataHandler) CreateData(ctx *gin.Context) {
 	path := pathValue(ctx)
 
 	var valueData map[string]interface{}
@@ -55,7 +55,7 @@ func (h *Handler) CreateData(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
-func (h *Handler) DeleteData(ctx *gin.Context) {
+func (h *DataHandler) DeleteData(ctx *gin.Context) {
 
 	id := ctx.Query("id")
 	path := pathValue(ctx)
@@ -68,7 +68,7 @@ func (h *Handler) DeleteData(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
-func (h *Handler) UpdateData(ctx *gin.Context) {
+func (h *DataHandler) UpdateData(ctx *gin.Context) {
 	id := ctx.Query("id")
 	path := pathValue(ctx)
 
@@ -88,13 +88,13 @@ func (h *Handler) UpdateData(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
-func (h *Handler) ListAllNode(ctx *gin.Context) {
+func (h *DataHandler) ListAllNode(ctx *gin.Context) {
 	node := h.root.DeepClone()
 
 	ctx.JSON(http.StatusOK, node)
 }
 
-func (h *Handler) GetNode(ctx *gin.Context) {
+func (h *DataHandler) GetNode(ctx *gin.Context) {
 	path := pathValue(ctx)
 
 	node := h.root.NodeWithScopes(path)
@@ -113,13 +113,3 @@ func pathValue(ctx *gin.Context) string {
 	return path
 }
 
-func ErrorCtx(ctx *gin.Context, code int, err error) {
-	errObj := struct {
-		Error string `json:"error"`
-	}{
-		Error: err.Error(),
-	}
-
-	ctx.JSON(code, errObj)
-
-}

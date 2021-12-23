@@ -26,17 +26,19 @@ func StartHttpServer(node *tree.Node) {
 
 	innerInit()
 
-	handler := handle.NewHandler(node)
+	dataHandler := handle.NewHandler(node)
 
 	server := gin.Default()
 
-	server.GET(utils.HttpJsonObjectPath, handler.GetData)
-	server.POST(utils.HttpJsonObjectPath, handler.CreateData)
-	server.DELETE(utils.HttpJsonObjectPath, handler.DeleteData)
-	server.PUT(utils.HttpJsonObjectPath, handler.UpdateData)
+	server.GET(utils.HttpJsonObjectPath, dataHandler.GetData)
+	server.POST(utils.HttpJsonObjectPath, dataHandler.CreateData)
+	server.DELETE(utils.HttpJsonObjectPath, dataHandler.DeleteData)
+	server.PUT(utils.HttpJsonObjectPath, dataHandler.UpdateData)
 
-	server.GET("/node/*path", handler.GetNode)
-	server.GET("/nodes/", handler.ListAllNode)
+	server.GET("/node/*path", dataHandler.GetNode)
+	server.GET("/nodes/", dataHandler.ListAllNode)
+
+	server.Any("/mock/code/special-http-code/:code", handle.MockHttpCode)
 
 	utils.Logger.Trace("Add routes...")
 
