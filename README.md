@@ -7,6 +7,15 @@
 
 提供请求模拟返回工具，并提供了 JSON 的存储能力。
 
+
+## 编译 & 运行
+
+### 镜像
+
+```shell
+docker build -t om:version .
+```
+
 ## 使用
 
 ### HTTP 请求模拟
