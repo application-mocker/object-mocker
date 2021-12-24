@@ -13,7 +13,9 @@
 ### 镜像
 
 ```shell
-docker build -t om:version .
+docker build -t mxudong/object-mocker:version .
+# or
+make docker-build-version
 ```
 
 ## 使用
