@@ -39,6 +39,8 @@ func StartHttpServer(node *tree.Node) {
 	server.GET("/nodes/", dataHandler.ListAllNode)
 
 	server.Any("/mock/code/special-http-code/:code", handle.MockHttpCode)
+	server.Any("/mock/byte/size/:size", handle.MockHttpBodyByteSize)
+	server.Any("/mock/bit/size/:size")
 
 	utils.Logger.Trace("Add routes...")
 
