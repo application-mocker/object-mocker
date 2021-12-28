@@ -10,7 +10,7 @@ import (
 
 const (
 	ScopeSeparator = "/"
-	ScopeRegex     = "^[a-zA-Z0-9\\_\\<\\>]*$"
+	ScopeRegex     = "^[a-zA-Z0-9\\_\\<\\>\\-]*$"
 )
 
 var scopeRegex *regexp.Regexp
