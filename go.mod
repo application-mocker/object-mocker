@@ -1,4 +1,4 @@
-module github.com/application-mocker/object-client
+module github.com/application-mocker/object-mocker
 
 go 1.17
 
