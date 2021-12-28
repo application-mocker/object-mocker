@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"github.com/application-mocker/object-mocker/config"
 	"github.com/google/uuid"
-	"object-mocker/config"
 )
 
 func init() {

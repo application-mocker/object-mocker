@@ -1,7 +1,7 @@
 package model
 
 import (
-	"object-mocker/utils"
+	"github.com/application-mocker/object-mocker/utils"
 )
 
 type Data struct {

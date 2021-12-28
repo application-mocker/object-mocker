@@ -2,10 +2,10 @@ package handle
 
 import (
 	"fmt"
+	"github.com/application-mocker/object-mocker/pkg/tree"
+	"github.com/application-mocker/object-mocker/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"object-mocker/pkg/tree"
-	"object-mocker/utils"
 	"strings"
 )
 

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/application-mocker/object-mocker/config"
+	"github.com/application-mocker/object-mocker/internal/web"
+	"github.com/application-mocker/object-mocker/pkg/tree"
+	"github.com/application-mocker/object-mocker/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"object-mocker/config"
-	"object-mocker/internal/web"
-	"object-mocker/pkg/tree"
-	"object-mocker/utils"
 	"os"
 )
 

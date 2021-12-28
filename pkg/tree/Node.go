@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"object-mocker/pkg/model"
-	"object-mocker/utils"
+	"github.com/application-mocker/object-mocker/pkg/model"
+	"github.com/application-mocker/object-mocker/utils"
 	"regexp"
 	"strings"
 	"sync"
